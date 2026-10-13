@@ -11,10 +11,16 @@ ehthumbs.db
 $RECYCLE.BIN/
 
 # --- Environment and Secrets ---
+.env
+.env.*
 **/.env
 **/.env.*
 !**/.env.example
 !**/.env.*.example
+docker/.env
+admin/.env
+backend/.env
+mobile/.env
 appsettings.*.local.json
 appsettings.Production.json
 appsettings.Staging.json
@@ -120,3 +126,10 @@ backend/src/RdReporta.Api/wwwroot/uploads/
 .codegraph/
 .codex/
 .gemini/
+.agents/
+skills-lock.json
+**/.hyperframes/
+
+# --- Temporary Root Screencaps ---
+/*.png
+
