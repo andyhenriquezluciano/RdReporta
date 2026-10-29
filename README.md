@@ -20,23 +20,6 @@ Plataforma ciudadana para publicar, consultar y localizar incidencias comunitari
 
 RDReporta reúne una aplicación móvil en Flutter, una API en ASP.NET Core y un panel web de administración. Los ciudadanos pueden compartir lo que ocurre en su comunidad, adjuntar evidencias, ubicar reportes y reaccionar a las publicaciones. El equipo de moderación puede revisar denuncias y gestionar el contenido desde el panel web.
 
-## Recorrido en video
-
-Grabación real de la aplicación: **46 segundos** con navegación por el inicio, reacciones, galería, mapa, tendencias y formulario de publicación.
-
-https://github.com/user-attachments/assets/d14224ab-a9c0-454d-b0e2-cd23083e1112
-
-| Tramo | Qué muestra |
-| --- | --- |
-| 00:00–00:06 | Inicio y selector de reacciones. |
-| 00:06–00:14 | Detalle de una incidencia y recorrido por su galería. |
-| 00:14–00:22 | Radar, marcador y acceso al detalle desde el mapa. |
-| 00:22–00:24 | Sección Popular y su estado sin tendencias. |
-| 00:24–00:42 | Formulario, evidencias, GPS, dirección y selección de ubicación en el mapa. |
-| 00:42–00:46 | Regreso a Popular e Inicio. |
-
-Las capturas del recorrido se extrajeron del video suministrado. El formulario se muestra durante la preparación de un reporte; la grabación no incluye el envío de una publicación nueva. El acceso por correo se ilustra con una captura real adicional de la aplicación.
-
 ## Funciones de la aplicación móvil
 
 ### Inicio y consulta de incidencias
@@ -158,7 +141,7 @@ La sección **Popular esta semana** reúne las publicaciones activas de los últ
 - Denuncia de publicaciones por información falsa, spam, acoso, datos personales, contenido violento, ubicación incorrecta, duplicados u otros motivos.
 - Revisión de las denuncias desde el panel de moderación.
 
-Las funciones de perfiles, preferencias, notificaciones y moderación están implementadas en el código; no aparecen en el video de este README.
+Las funciones de perfiles, preferencias, notificaciones y moderación están implementadas en el código; no se incluyen capturas de esas pantallas en este README.
 
 ## Panel web de administración
 
@@ -173,7 +156,7 @@ El panel React ofrece acceso según los roles **Moderador** y **Administrador**.
 | Categorías | Consulta, creación y edición de categorías: nombre, descripción, icono, color y orden. La escritura requiere rol de administrador. |
 | Apariencia | Selección del tema visual del panel. |
 
-Los estados de las publicaciones son **activa**, **resuelta**, **oculta** y **archivada**. Las capturas y el video de esta página corresponden a la aplicación móvil; no se incluyen imágenes de muestra del panel web.
+Los estados de las publicaciones son **activa**, **resuelta**, **oculta** y **archivada**. Las capturas de esta página corresponden a la aplicación móvil; no se incluyen imágenes de muestra del panel web.
 
 ## Tecnologías y organización
 
@@ -199,7 +182,7 @@ RdReporta/
 │   └── tests/              Comprobaciones existentes del backend
 ├── database/               Inicialización de PostGIS y catálogos SQL
 ├── docker/                 Docker Compose y plantilla de entorno
-├── docs/media/             Capturas y video utilizados en este README
+├── docs/media/             Capturas utilizadas en este README
 └── scripts/                Herramientas de comprobación del proyecto
 ```
 
