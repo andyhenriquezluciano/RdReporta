@@ -19,6 +19,7 @@
 **/*.pfx
 **/*.pem
 **/*.key
+**/*.lic
 mobile/
 admin/
 docs/

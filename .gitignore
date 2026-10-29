@@ -38,6 +38,7 @@ railway.json
 *.pem
 *.key
 key.properties
+*.lic
 
 # --- Visual Studio & VS Code ---
 .vs/
@@ -45,10 +46,6 @@ key.properties
 *.userosscache
 *.sln.docstates
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 *.suo
 *.userprefs
 
@@ -122,13 +119,24 @@ data/
 # Uploaded user media is runtime data, never source code.
 backend/src/RdReporta.Api/wwwroot/uploads/
 
-# --- Tooling & AI Caches ---
+# --- Local tooling ---
 .codegraph/
 .codex/
 .gemini/
 .agents/
 skills-lock.json
 **/.hyperframes/
+.archify/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+
+# --- Local captures and sample content ---
+/videos/
+/news-media/
+/database/seeds/03_insert_10_incidents.sql
+/database/seeds/04_insert_10_real_news.sql
+/docker/package-lock.json
 
 # --- Temporary Root Screencaps ---
 /*.png

@@ -1,37 +1,32 @@
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Formats.Png.Chunks;
-using SixLabors.ImageSharp.Formats.Webp;
+using ImageMagick;
 using RdReporta.Infrastructure.Security;
 using RdReporta.Application.Common;
 
-foreach (var (extension, encoder) in new (string, IImageEncoder)[]
+foreach (var (extension, format) in new (string, MagickFormat)[]
 {
-    (".jpg", new JpegEncoder()), (".png", new PngEncoder()), (".webp", new WebpEncoder())
+    (".jpg", MagickFormat.Jpeg), (".png", MagickFormat.Png), (".webp", MagickFormat.WebP)
 })
 {
-    using var image = new Image<Rgb24>(10, 20);
-    image.Metadata.ExifProfile = new ExifProfile();
-    image.Metadata.ExifProfile.SetValue(ExifTag.Orientation, (ushort)6);
-    image.Metadata.ExifProfile.SetValue(ExifTag.GPSLatitudeRef, "N");
-    image.Metadata.ExifProfile.SetValue(ExifTag.Artist, "Private author");
+    using var image = new MagickImage(MagickColors.Black, 10, 20);
+    var exif = new ExifProfile();
+    exif.SetValue(ExifTag.Orientation, (ushort)6);
+    exif.SetValue(ExifTag.GPSLatitudeRef, "N");
+    exif.SetValue(ExifTag.Artist, "Private author");
+    image.SetProfile(exif);
+    image.Orientation = Orientation.RightTop;
     if (extension == ".png")
-        image.Metadata.GetPngMetadata().TextData.Add(new PngTextData("Author", "Private author", "", ""));
+        image.SetAttribute("Author", "Private author");
     using var input = new MemoryStream();
-    await image.SaveAsync(input, encoder);
+    await image.WriteAsync(input, format);
     input.Position = 0;
     using var sanitized = await ImageSecurityHelper.RemoveMetadataAsync(input, extension);
-    using var decoded = await Image.LoadAsync(sanitized);
+    using var decoded = new MagickImage(sanitized);
     if (decoded.Width != 20 || decoded.Height != 10)
         throw new Exception($"{extension}: image orientation changed.");
-    if (decoded.Metadata.ExifProfile != null || decoded.Metadata.XmpProfile != null
-        || decoded.Metadata.IptcProfile != null)
+    if (decoded.GetExifProfile() != null || decoded.GetXmpProfile() != null
+        || decoded.GetIptcProfile() != null)
         throw new Exception($"{extension}: private metadata survived.");
-    if (extension == ".png" && decoded.Metadata.GetPngMetadata().TextData.Count != 0)
+    if (extension == ".png" && decoded.GetAttribute("Author") != null)
         throw new Exception("PNG private text survived.");
 }
 
