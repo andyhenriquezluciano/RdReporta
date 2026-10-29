@@ -186,84 +186,9 @@ RdReporta/
 └── scripts/                Herramientas de comprobación del proyecto
 ```
 
-## Ejecución local
-
-### Requisitos
-
-- .NET 10 SDK.
-- Node.js 22.12 o posterior y npm para el panel web.
-- Flutter SDK compatible con las dependencias de `mobile/pubspec.yaml` y Android SDK para Android.
-- Docker con Docker Compose para PostgreSQL y PostGIS.
-- macOS con Xcode para compilar y ejecutar la aplicación en iOS.
-
-Los siguientes ejemplos utilizan **PowerShell** y se ejecutan desde la raíz del repositorio, salvo cuando se indica un cambio de carpeta.
-
-### 1. Clonar y preparar la base de datos
-
-```powershell
-git clone https://github.com/andyhenriquezluciano/RdReporta.git
-cd RdReporta
-Copy-Item docker/.env.example docker/.env
-```
-
-Edita `docker/.env` y sustituye los valores de ejemplo de `POSTGRES_PASSWORD` y `JWT_SECRET_KEY` por valores aleatorios propios. Después inicia únicamente la base de datos:
-
-```powershell
-docker compose --env-file docker/.env -f docker/docker-compose.yml up -d db
-```
-
-### 2. Configurar y ejecutar la API
-
-Guarda la conexión y la clave JWT en los secretos de desarrollo de .NET. La contraseña debe coincidir con la definida para PostgreSQL; la clave JWT debe contener al menos 32 bytes aleatorios.
-
-```powershell
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=rdreporta_db;Username=postgres;Password=<tu-password-local>" --project backend/src/RdReporta.Api
-dotnet user-secrets set "Jwt:SecretKey" "<tu-secreto-aleatorio-de-al-menos-32-bytes>" --project backend/src/RdReporta.Api
-dotnet restore backend/RdReporta.slnx
-dotnet run --project backend/src/RdReporta.Api --launch-profile http
-```
-
-La API estará en `http://localhost:5000`. En desarrollo, Scalar está disponible en `http://localhost:5000/scalar/v1`. El arranque inicializa el esquema y los catálogos cuando puede conectarse a la base de datos.
-
-Para crear el administrador inicial, configura `SeedAdmin:Email` y `SeedAdmin:Password` mediante `dotnet user-secrets` antes de arrancar la API. No existe una contraseña administrativa predeterminada en el repositorio.
-
-### 3. Ejecutar el panel web
-
-En otra terminal:
-
-```powershell
-cd admin
-Copy-Item .env.example .env
-npm ci
-npm run dev
-```
-
-`VITE_API_BASE_URL` debe apuntar a la API, por ejemplo `http://localhost:5000/api`. Vite muestra en la terminal la dirección local del panel. El acceso requiere una cuenta con rol de moderador o administrador.
-
-### 4. Ejecutar la aplicación móvil
-
-Configura tu proyecto Firebase en `mobile/android/app/google-services.json`; el archivo `.example` indica la estructura, pero no sustituye una configuración válida. Para Google Maps en Android, añade tu clave restringida como `MAPS_API_KEY` en `mobile/android/local.properties`, conservando las rutas del SDK existentes.
-
-```powershell
-cd mobile
-flutter pub get
-flutter run --dart-define=API_BASE_URL=http://10.0.2.2:5000/api
-```
-
-`10.0.2.2` corresponde al equipo anfitrión desde el emulador Android. En un teléfono físico, utiliza una dirección de la API accesible desde ese dispositivo. Para Google Sign-In, configura también `GOOGLE_SERVER_CLIENT_ID` mediante `--dart-define` y el mismo identificador de cliente en el servidor.
-
-### Servicios opcionales
-
-| Servicio | Configuración |
-| --- | --- |
-| Recuperación por correo | Valores `Smtp:*` en la configuración privada del servidor. |
-| Inicio con Google o Apple | Valores `Authentication:*` y configuración de la plataforma correspondiente. |
-| Avisos push | `Firebase:Enabled`, `Firebase:ProjectId`, credenciales del servidor mediante Application Default Credentials y configuración Firebase de la app. |
-| Almacenamiento S3 | `Storage:Provider=S3` y los valores privados de bucket, endpoint y acceso de `Storage:*`. |
-
 ## Seguridad y datos privados
 
-Las contraseñas, claves JWT, cuentas de servicio, certificados, configuraciones Firebase y archivos `.env` deben permanecer fuera del control de versiones. Utiliza las plantillas de ejemplo y configura tus propios servicios.
+Las contraseñas, claves JWT, cuentas de servicio, certificados, configuraciones Firebase y archivos `.env` deben permanecer fuera del control de versiones.
 
 El backend aplica permisos por rol, validaciones de archivos, comprobaciones de propiedad de los medios subidos y límites de solicitudes. Las imágenes se vuelven a codificar, se orientan y se eliminan sus metadatos antes de almacenarse. En producción, sirve la API mediante HTTPS y restringe las claves de mapas a las aplicaciones autorizadas.
 
