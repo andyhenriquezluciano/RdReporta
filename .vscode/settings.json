@@ -1,7 +1,0 @@
-{
-  "dart.flutterSdkPath": "C:\\src\\flutter",
-  "terminal.integrated.env.windows": {
-    "PATH": "${env:PATH};C:\\src\\flutter\\bin"
-  },
-  "dotnet.defaultSolution": "backend/RdReporta.slnx"
-}
