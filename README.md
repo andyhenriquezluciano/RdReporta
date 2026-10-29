@@ -24,15 +24,7 @@ RDReporta reúne una aplicación móvil en Flutter, una API en ASP.NET Core y un
 
 Grabación real de la aplicación: **46 segundos** con navegación por el inicio, reacciones, galería, mapa, tendencias y formulario de publicación.
 
-<p align="center">
-  <a href="https://github.com/andyhenriquezluciano/RdReporta/raw/refs/heads/main/docs/media/recorrido-rdreporta.mp4">
-    <img src="docs/media/inicio.jpg" alt="Abrir el video de demostración de RDReporta" width="240" />
-  </a>
-  <br />
-  <strong>Haz clic en la captura para abrir el video.</strong>
-</p>
-
-[Ver o descargar el recorrido completo en MP4](https://github.com/andyhenriquezluciano/RdReporta/raw/refs/heads/main/docs/media/recorrido-rdreporta.mp4).
+https://github.com/user-attachments/assets/d14224ab-a9c0-454d-b0e2-cd23083e1112
 
 | Tramo | Qué muestra |
 | --- | --- |
