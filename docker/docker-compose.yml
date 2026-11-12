@@ -44,6 +44,19 @@ services:
     volumes:
       - ../backend/src/RdReporta.Api/wwwroot/uploads:/app/wwwroot/uploads
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: rdreporta_ngrok
+    restart: unless-stopped
+    command:
+      - "http"
+      - "api:5000"
+      - "--url=unwashed-unpainted-embark.ngrok-free.dev"
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN:?Define NGROK_AUTHTOKEN in docker/.env}
+    depends_on:
+      - api
+
 volumes:
   rdreporta_pgdata:
     name: rdreporta_pgdata
