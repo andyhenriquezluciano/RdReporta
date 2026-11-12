@@ -39,14 +39,36 @@ async function evaluate(expression) {
   if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails));
   return result.result.value;
 }
+async function callOnDocument(functionDeclaration, args = []) {
+  const { result: document } = await command('Runtime.evaluate', { expression: 'document', returnByValue: false });
+  const result = await command('Runtime.callFunctionOn', {
+    objectId: document.objectId,
+    functionDeclaration,
+    arguments: args.map(value => ({ value })),
+    returnByValue: true,
+  });
+  if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails));
+  return result.result.value;
+}
 async function until(expression) {
   for (let i = 0; i < 100; i++) { if (await evaluate(expression)) return; await delay(100); }
   throw new Error(`UI timeout: ${expression}`);
 }
-const button = text => `Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === ${JSON.stringify(text)})`;
-async function click(text) { await evaluate(`${button(text)}.click()`); }
+async function click(text) {
+  await callOnDocument(function (text) {
+    const button = Array.from(this.querySelectorAll('button')).find(item => item.textContent.trim() === text);
+    if (!button) throw new Error(`Missing button: ${text}`);
+    button.click();
+  }.toString(), [text]);
+}
 async function fill(selector, value) {
-  await evaluate(`(() => { const el = document.querySelector(${JSON.stringify(selector)}); const prototype = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : el.tagName === 'SELECT' ? HTMLSelectElement.prototype : HTMLInputElement.prototype; Object.getOwnPropertyDescriptor(prototype, 'value').set.call(el, ${JSON.stringify(value)}); el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', {bubbles: true})); })()`);
+  await callOnDocument(function (selector, value) {
+    const el = this.querySelector(selector);
+    if (!el) throw new Error(`Missing form field: ${selector}`);
+    const prototype = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : el.tagName === 'SELECT' ? HTMLSelectElement.prototype : HTMLInputElement.prototype;
+    Object.getOwnPropertyDescriptor(prototype, 'value').set.call(el, value);
+    el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+  }.toString(), [selector, value]);
 }
 const fixture = `(() => {
   const categories = [{id: 1, name: 'Vías públicas', slug: 'vias', description: 'Daños en calles y vías.', iconName: 'road', colorHex: '#31748F', displayOrder: 1}];
@@ -79,8 +101,14 @@ const fixture = `(() => {
   const portFile = path.join(profile, 'DevToolsActivePort');
   for (let i = 0; i < 100 && !fs.existsSync(portFile); i++) await delay(100);
   assert(fs.existsSync(portFile), 'Browser did not start.');
-  const port = fs.readFileSync(portFile, 'utf8').split('\n')[0];
-  const tabs = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+  const portText = fs.readFileSync(portFile, 'utf8').split(/\r?\n/, 1)[0];
+  assert(/^\d{1,5}$/.test(portText), 'Browser returned an invalid debugging port.');
+  const port = Number(portText);
+  assert(Number.isInteger(port) && port >= 1024 && port <= 65535, 'Browser returned an invalid debugging port.');
+  const endpoint = new URL('http://127.0.0.1/');
+  endpoint.port = String(port);
+  endpoint.pathname = '/json/list';
+  const tabs = await (await fetch(endpoint)).json();
   ws = new WebSocket(tabs.find(t => t.type === 'page').webSocketDebuggerUrl);
   ws.addEventListener('message', event => {
     const message = JSON.parse(event.data); const wait = pending.get(message.id);
